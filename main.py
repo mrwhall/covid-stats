@@ -7,7 +7,7 @@ import io
 
 st.set_page_config(
     page_title="Covid Stats by Province",
-    page_icon="flag-za"
+    page_icon="syringe"
 )
 
 #get csv
@@ -34,13 +34,9 @@ data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']]=data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']].diff().rolling(7).mean().round(0)
 data.set_index("date",inplace=True)
-# data.rename(columns={"total":"Total"},inplace=True)
 data.dropna(inplace=True)
 
 
-# data.columns
-# data.set_index("YYYYMMDD")
-# prov=st.multiselect(options=list(data.columns)),label="Choose province")
 st.title("Daily New Covid Cases by Province")
 
 container = st.beta_container()
@@ -48,28 +44,14 @@ all = st.checkbox("Select all")
 
 if all:
     prov = container.multiselect("Choose a province:",
-                                             list(data.columns), list(data.columns))
+                                             sorted(list(data.columns)), sorted(list(data.columns)))
 else:
     prov = container.multiselect("Choose a province:",
-                                             list(data.columns))
-#
-# data.head()
-# # data.set_index("YYYYMMDD")
-# to_plot=data.loc['date',prov].set_index('date')
-# st.line_chart(data[prov])
+                                             sorted(list(data.columns)))
 
-
-
-
-#
-# chart_data = go.Scatter(y=data.EC.diff().rolling(7).mean(),x=data['date'])
-#
-# layout = go.Layout(title='Covid Cases by Province', xaxis=dict(title='Date'),
-#                    yaxis=dict(title='Cases'))
-# fig = go.Figure(data=[chart_data], layout=layout)
-# st.plotly_chart(fig)
-
+#Layout
 col1, col2 = st.beta_columns([10,30])
+
 st.markdown(
         f"""
 <style>
@@ -84,28 +66,8 @@ st.markdown(
         unsafe_allow_html=True,
     )
 
+peaks = data.loc['2020-12-01T00:00:00.000000000':'2021-02-25T00:00:00.000000000'].max()
 
-# data_melt = data.melt(id_vars='date', value_vars=['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
-#        'WC','Total'])
-#
-# fig=px.line(data_melt, x='date' , y='value' , color='variable',
-#             labels={'date':'Date', 'value':'7 Day Moving Average'},
-#             width=1000, height=600,
-#             template="plotly_white",)
-# fig.update_layout(legend_title_text='Province')
-# fig.update_layout(
-#     hoverlabel=dict(
-#         # bgcolor="white",
-#         font_size=12,
-#         font_family="IBM Plex Sans"
-#     )
-# )
-# fig.update_traces(hovertemplate='%{y}<br>%{x}')
-
-# st.title("Daily New Covid Cases by Province")
-
-# st.plotly_chart(fig)
-# np.char.replace(prov, 'Total', 'total')
 with col1:
     if "total" in prov:
         st.subheader("Total cases:")
@@ -116,6 +78,11 @@ with col1:
 
         st.subheader("Total vaccinated:")
         st.write(f"{df_vacc.total.iloc[-1].sum():,}")
+
+        if 0.3*peaks.total.sum()<data.total.iloc[-1]:
+            st.markdown("_SA is still in the third wave_")
+        else:
+            st.markdown("_SA is no longer in the third wave_")
     else:
         st.subheader("Total cases:")
         st.write(f"{df[prov].iloc[-1].sum():,}")
@@ -126,8 +93,15 @@ with col1:
         st.subheader("Total vaccinated:")
         st.write(f"{df_vacc[prov].iloc[-1].sum():,}")
 
+        if 0.3*(peaks[prov].sum())<data[prov].iloc[-1].sum():
+            st.markdown("_These/this province(s) are still in the third wave_")
+        else:
+            st.markdown("_These/this province(s) are no longer in the third wave_")
+
 with col2:
     st.line_chart(data[prov],width=850,height=400,use_container_width=False)
+    st.caption("Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
+
 
 
 
