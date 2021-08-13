@@ -97,5 +97,6 @@ with col1:
             st.markdown("_These/this province(s) are no longer in the third wave_")
 
 with col2:
+    st.subheader("New cases (7 day moving-average)")
     st.line_chart(data[prov],width=850,height=400,use_container_width=False)
     st.caption("Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
