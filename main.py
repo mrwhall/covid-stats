@@ -25,9 +25,7 @@ df_vacc=pd.read_csv(io.StringIO(csv_vacc.decode('utf-8')))
 #convert dates
 df.date=pd.to_datetime(df.date,format="%d-%m-%Y")
 
-# st.plotly_chart(df.WC)
 df.dropna(inplace=True)
-# df.rename(columns={"date":"Date"},inplace=True)
 data=df[['date','EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']]
 data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
@@ -101,8 +99,3 @@ with col1:
 with col2:
     st.line_chart(data[prov],width=850,height=400,use_container_width=False)
     st.caption("Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
-
-
-
-
-
