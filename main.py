@@ -42,10 +42,10 @@ all = st.checkbox("Select all")
 
 if all:
     prov = container.multiselect("Choose a province:",
-                                             sorted(list(data.columns)), sorted(list(data.columns)))
+                                             sorted(list(data.columns)), sorted(list(data.columns)),default=['total'])
 else:
     prov = container.multiselect("Choose a province:",
-                                             sorted(list(data.columns)))
+                                             sorted(list(data.columns)),default=['total'])
 
 #Layout
 col1, col2 = st.beta_columns([10,30])
