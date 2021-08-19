@@ -42,7 +42,7 @@ all = st.checkbox("Select all")
 
 if all:
     prov = container.multiselect("Choose a province:",
-                                             sorted(list(data.columns)), sorted(list(data.columns)),default=['total'])
+                                             sorted(list(data.columns)), sorted(list(data.columns)))
 else:
     prov = container.multiselect("Choose a province:",
                                              sorted(list(data.columns)),default=['total'])
