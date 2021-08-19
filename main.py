@@ -22,6 +22,13 @@ df_deaths=pd.read_csv(io.StringIO(csv_deaths.decode('utf-8')))
 csv_vacc=requests.get('https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_vaccination.csv').content
 df_vacc=pd.read_csv(io.StringIO(csv_vacc.decode('utf-8')))
 
+
+#population
+csv_pop=requests.get('https://raw.githubusercontent.com/dsfsi/covid19za/master/data/district_data/za_province_pop.csv').content
+df_pop=pd.read_csv(io.StringIO(csv_pop.decode('utf-8')),names=["province","population"])
+
+prov_short=['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
+       'WC']
 #convert dates
 df.date=pd.to_datetime(df.date,format="%d-%m-%Y")
 
@@ -33,6 +40,15 @@ data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']].diff().rolling(7).mean().round(0)
 data.set_index("date",inplace=True)
 data.dropna(inplace=True)
+
+provinces=dict(zip(sorted(prov_short),sorted(list(df_pop["province"]))))
+
+
+data100000=pd.DataFrame()
+for province in prov_short:
+    data100000[province]=data[province]/int(df_pop["population"][df_pop["province"]==provinces[province]])*100000
+
+data100000["total"]=data['total']/sum(df_pop["population"])*100000
 
 
 st.title("Daily New Covid Cases by Province")
@@ -98,6 +114,13 @@ with col1:
             st.markdown("_These/this province(s) are no longer in the third wave_")
 
 with col2:
-    st.subheader("New cases (7 day moving-average)")
-    st.line_chart(data[prov],width=850,height=400,use_container_width=False)
-    st.caption("Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
+    if st.checkbox("Per 100,000 people"):
+        st.subheader("New cases per 100,000 people (7 day moving-average)")
+        st.line_chart(data100000[prov], width=850, height=400, use_container_width=False)
+        st.caption(
+            "Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
+    else:
+        st.subheader("New cases (7 day moving-average)")
+        st.line_chart(data[prov],width=850,height=400,use_container_width=False)
+        st.caption("Data source: [https://github.com/dsfsi/covid19za/tree/master/data](https://github.com/dsfsi/covid19za/tree/master/data)")
+
