@@ -2,13 +2,13 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
-from numpy import sign
 
 def MA(df):
     return df.diff().rolling(7).mean().round(0)
 
 def perc_change(new, old):
     return (new-old)/old
+
 
 
 def per100000(df,columns):
