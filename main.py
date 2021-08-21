@@ -2,9 +2,14 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
+from numpy import sign
 
 def MA(df):
     return df.diff().rolling(7).mean().round(0)
+
+def perc_change(new, old):
+    return (new-old)/old
+
 
 def per100000(df,columns):
     data100000 = pd.DataFrame()
@@ -46,7 +51,7 @@ provandTotal=['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
 
 st.title("Daily New Covid Cases by Province")
 
-container = st.beta_container()
+container = st.container()
 all = st.checkbox("Select all")
 
 if all:
@@ -64,34 +69,25 @@ if prov == []:
 with st.sidebar:
     st.title("Overall numbers and daily changes")
     if "total" in prov:
-        st.metric(label="Total cases",value=f"{df_cases.total.iloc[-1]:,}", delta=f"{df_cases.total.pct_change().iloc[-1]:.1%}")
+        st.metric(label="Total cases",value=f"{df_cases.total.iloc[-1]:,}", delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2]):.1%} = {(df_cases.total.diff()).iloc[-1]-(df_cases.total.diff()).iloc[-2]:.0f}")
 
-        st.metric(label="Total deaths",value=f"{df_deaths.total.iloc[-1]:,}", delta=f"{df_deaths.total.pct_change().iloc[-1]:.1%}")
+        st.metric(label="Total deaths",value=f"{df_deaths.total.iloc[-1]:,}", delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2]):.1%} = {(df_deaths.total.diff()).iloc[-1]-(df_deaths.total.diff()).iloc[-2]:.0f}")
 
-        st.metric(label="Total vaccined",value=f"{df_vacc.total.iloc[-1]:,}", delta=f"{df_vacc.total.pct_change().iloc[-1]:.1%}")
+        st.metric(label="Total vaccinated",value=f"{df_vacc.total.iloc[-1]:,}", delta=f"{perc_change(df_vacc.total.diff().iloc[-1],df_vacc.total.diff().iloc[-2]):.1%} = {(df_vacc.total.diff()).iloc[-1]-(df_vacc.total.diff()).iloc[-2]:.0f}")
 
         if 0.3*peaks.total.sum()<df_cases.total.iloc[-1]:
             st.markdown("_SA is still in the third wave_")
         else:
             st.markdown("_SA is no longer in the third wave_")
     else:
-        st.metric(label="Total cases", value=f"{df_cases[prov].iloc[-1].sum():,}",
-                  delta=f"{df_cases[prov].pct_change().iloc[-1].mean():.1%}")
+        st.metric(label="Total cases",value=f"{df_cases[prov].iloc[-1].sum():,}",
+                  delta=f"{perc_change(df_cases[prov].diff().iloc[-1].sum(),df_cases[prov].diff().iloc[-2].sum()):.1%} = {(df_cases[prov].diff()).iloc[-1].sum()-(df_cases[prov].diff()).iloc[-2].sum():.0f}")
 
         st.metric(label="Total deaths", value=f"{df_deaths[prov].iloc[-1].sum():,}",
-                  delta=f"{df_deaths[prov].pct_change().iloc[-1].mean():.1%}")
+                  delta=f"{perc_change(df_deaths[prov].diff().iloc[-1].sum(), df_deaths[prov].diff().iloc[-2].sum()):.1%} = {(df_deaths[prov].diff()).iloc[-1].sum() - (df_deaths[prov].diff()).iloc[-2].sum():.0f}")
 
-        st.metric(label="Total vaccined", value=f"{df_vacc[prov].iloc[-1].sum():,}",
-                  delta=f"{df_vacc[prov].pct_change().iloc[-1].mean():.1%}")
-
-        st.subheader("Total cases:")
-        st.write(f"{df_cases[prov].iloc[-1].sum():,}")
-
-        st.subheader("Total deaths:")
-        st.write(f"{df_deaths[prov].iloc[-1].sum():,}")
-
-        st.subheader("Total vaccinated:")
-        st.write(f"{df_vacc[prov].iloc[-1].sum():,}")
+        st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}",
+                  delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum()):.1%} = {(df_vacc[prov].diff()).iloc[-1].sum() - (df_vacc[prov].diff()).iloc[-2].sum():.0f}")
 
         if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
             st.markdown("_These/this province(s) are still in the third wave_")
