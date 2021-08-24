@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import io
 
+@st.cache
 def MA(df):
     return df.diff().rolling(7).mean().round(0)
 
@@ -70,15 +71,15 @@ with st.sidebar:
     st.title("Overall numbers and daily changes")
     if "total" in prov:
         st.metric(label="Total cases",value=f"{df_cases.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2]):.1%} = {(df_cases.total.diff()).iloc[-1]-(df_cases.total.diff()).iloc[-2]:.0f}",
+                  delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2]):.1%} = {(df_cases.total.diff()).iloc[-1]-(df_cases.total.diff()).iloc[-2]:,}",
                   delta_color="inverse")
 
         st.metric(label="Total deaths",value=f"{df_deaths.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2]):.1%} = {(df_deaths.total.diff()).iloc[-1]-(df_deaths.total.diff()).iloc[-2]:.0f}",
+                  delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2]):.1%} = {(df_deaths.total.diff()).iloc[-1]-(df_deaths.total.diff()).iloc[-2]:,}",
                   delta_color="inverse")
 
         st.metric(label="Total vaccinated",value=f"{df_vacc.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_vacc.total.diff().iloc[-1],df_vacc.total.diff().iloc[-2]):.1%} = {(df_vacc.total.diff()).iloc[-1]-(df_vacc.total.diff()).iloc[-2]:.0f}")
+                  delta=f"{perc_change(df_vacc.total.iloc[-1],df_vacc.total.iloc[-2]):.1%} = {(df_vacc.total).iloc[-1]-(df_vacc.total).iloc[-2]:,}")
 
         if 0.3*peaks.total.sum()<df_cases.total.iloc[-1]:
             st.markdown("_SA is still in the third wave_")
@@ -94,8 +95,7 @@ with st.sidebar:
                   delta_color="inverse")
 
         st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum()):.1%} = {(df_vacc[prov].diff()).iloc[-1].sum() - (df_vacc[prov].diff()).iloc[-2].sum():.0f}")
-
+                  delta=f"{perc_change(df_vacc[prov].iloc[-1].sum(), df_vacc[prov].iloc[-2].sum()):.1%} = {(df_vacc[prov]).iloc[-1].sum() - (df_vacc[prov]).iloc[-2].sum():.0f}")
         if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
             st.markdown("_These/this province(s) are still in the third wave_")
         else:
