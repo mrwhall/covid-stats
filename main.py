@@ -9,12 +9,10 @@ def MA(df):
     return df.diff().rolling(7).mean().round(0)
 
 def perc_change(new, old):
-    try:
-        ans = f"{(new-old)/old:.1%}"
-    except ZeroDivisionError:
-        ans = f"{0:.1%}"
-    if ans == math.inf or ans == float("inf"):
-        ans="Undefined"
+    ans = (new-old)/old
+    if (ans == math.inf):
+        ans="% is Undefined"
+    else: ans = f"{ans:.1%}"
     return ans
 
 
