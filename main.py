@@ -10,9 +10,9 @@ def MA(df):
 
 def perc_change(new, old):
     try:
-        ans = (new-old)/old
+        ans = f"{(new-old)/old:.1%}"
     except ZeroDivisionError:
-        ans = 0
+        ans = f"{0:.1%}"
     if ans == math.inf or ans == float("inf"):
         ans="Undefined"
     return ans
@@ -78,15 +78,15 @@ with st.sidebar:
     st.title("Overall numbers and daily changes")
     if "total" in prov:
         st.metric(label="Total cases",value=f"{df_cases.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2]):.1%} = {(df_cases.total.diff()).iloc[-1]:,}",
+                  delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2])} = {(df_cases.total.diff()).iloc[-1]:,}",
                   delta_color="inverse")
 
         st.metric(label="Total deaths",value=f"{df_deaths.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2]):.1%} = {(df_deaths.total.diff()).iloc[-1]:,}",
+                  delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2])} = {(df_deaths.total.diff()).iloc[-1]:,}",
                   delta_color="inverse")
 
         st.metric(label="Total vaccinated",value=f"{df_vacc.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_vacc.total.diff().iloc[-1],df_vacc.total.diff().iloc[-2]):.1%} = {(df_vacc.total.diff()).iloc[-1]:,}")
+                  delta=f"{perc_change(df_vacc.total.diff().iloc[-1],df_vacc.total.diff().iloc[-2])} = {(df_vacc.total.diff()).iloc[-1]:,}")
 
         # if 0.3*peaks.total.sum()<df_cases.total.iloc[-1]:
         #     st.markdown("_SA is still in the third wave_")
@@ -94,15 +94,15 @@ with st.sidebar:
         #     st.markdown("_SA is no longer in the third wave_")
     else:
         st.metric(label="Total cases",value=f"{df_cases[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_cases[prov].diff().iloc[-1].sum(),df_cases[prov].diff().iloc[-2].sum()):.1%} = {(df_cases[prov].diff()).iloc[-1].sum():.0f}",
+                  delta=f"{perc_change(df_cases[prov].diff().iloc[-1].sum(),df_cases[prov].diff().iloc[-2].sum())} = {(df_cases[prov].diff()).iloc[-1].sum():.0f}",
                   delta_color="inverse")
 
         st.metric(label="Total deaths", value=f"{df_deaths[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_deaths[prov].diff().iloc[-1].sum(), df_deaths[prov].diff().iloc[-2].sum()):.1%} = {(df_deaths[prov].diff()).iloc[-1].sum():.0f}",
+                  delta=f"{perc_change(df_deaths[prov].diff().iloc[-1].sum(), df_deaths[prov].diff().iloc[-2].sum())} = {(df_deaths[prov].diff()).iloc[-1].sum():.0f}",
                   delta_color="inverse")
 
         st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum()):.1%} = {(df_vacc[prov].diff()).iloc[-1].sum():.0f}")
+                  delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum())} = {(df_vacc[prov].diff()).iloc[-1].sum():.0f}")
         # if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
         #     st.markdown("_These/this province(s) are still in the third wave_")
         # else:
