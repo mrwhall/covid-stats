@@ -8,7 +8,11 @@ def MA(df):
     return df.diff().rolling(7).mean().round(0)
 
 def perc_change(new, old):
-    return (new-old)/old
+    try:
+        ans = (new-old)/old
+    except ZeroDivisionError:
+        ans = 0
+    return ans
 
 
 
@@ -96,10 +100,10 @@ with st.sidebar:
 
         st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}",
                   delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum()):.1%} = {(df_vacc[prov].diff()).iloc[-1].sum():.0f}")
-        if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
-            st.markdown("_These/this province(s) are still in the third wave_")
-        else:
-            st.markdown("_These/this province(s) are no longer in the third wave_")
+        # if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
+        #     st.markdown("_These/this province(s) are still in the third wave_")
+        # else:
+        #     st.markdown("_These/this province(s) are no longer in the third wave_")
 
     graphType = st.radio("Toggle graph", ["Daily Cases", "Daily Deaths", "Daily Vaccinated"])
 
