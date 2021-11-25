@@ -14,7 +14,7 @@ def perc_change(new, old):
     except ZeroDivisionError:
         ans = 0
     if ans == math.inf or ans == float("inf"):
-        ans=0
+        ans="Undefined"
     return ans
 
 
