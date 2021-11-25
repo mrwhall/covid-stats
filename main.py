@@ -1,3 +1,4 @@
+import math
 import streamlit as st
 import pandas as pd
 import requests
@@ -12,6 +13,8 @@ def perc_change(new, old):
         ans = (new-old)/old
     except ZeroDivisionError:
         ans = 0
+    if ans == math.inf or ans == float("inf"):
+        ans=0
     return ans
 
 
