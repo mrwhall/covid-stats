@@ -12,5 +12,5 @@ A simple app for visualing COVID-19 statistics using Streamlit. Data sourced fro
 
 3. Run the app:
     ```
-    streamlit run app.py
+    streamlit run main.py
     ```
