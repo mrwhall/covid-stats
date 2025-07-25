@@ -3,21 +3,14 @@ A simple app for visualing COVID-19 statistics using Streamlit. Data sourced fro
 
 ## Installation
 
-1. Clone the repository:
-    ```
-    git clone git@github.com:mrwhall/covid-stats.git
-    ```
-    cd covid-stats
-    ```
+1. Clone the repository
 
 2. Install the requirements:
     ```
     pip install -r requirements.txt
     ```
 
-## Running the App
-
-Start the Streamlit app with:
-```
-streamlit run app.py
-```
+3. Run the app:
+    ```
+    streamlit run app.py
+    ```
