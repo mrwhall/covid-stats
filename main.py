@@ -3,15 +3,16 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
+import numpy as np
 
-@st.cache
+@st.cache_data
 def MA(df):
     return df.diff().rolling(7).mean().round(0)
 
 def perc_change(new, old):
     ans = (new-old)/old
-    if (ans == math.inf):
-        ans="% is Undefined"
+    if (ans in [math.inf, np.nan]):
+        ans=0
     else: ans = f"{ans:.1%}"
     return ans
 
@@ -55,7 +56,7 @@ prov_short=['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
 provandTotal=['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']
 
-st.title("Daily New Covid Cases by Province")
+st.title("Covid-19 Stats by Province in South Africa 🇿🇦")
 
 container = st.container()
 all = st.checkbox("Select all")
@@ -63,7 +64,7 @@ all = st.checkbox("Select all")
 if all:
     prov = container.multiselect("Choose a province:",
                                              sorted(provandTotal), sorted(provandTotal))
-else:
+elif not all:
     prov = container.multiselect("Choose a province:",
                                              sorted(provandTotal),default=['total'])
 
@@ -76,35 +77,23 @@ with st.sidebar:
     st.title("Overall numbers and daily changes")
     if "total" in prov:
         st.metric(label="Total cases",value=f"{df_cases.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_cases.total.diff().iloc[-1],df_cases.total.diff().iloc[-2])} = {(df_cases.total.diff()).iloc[-1]:,}",
                   delta_color="inverse")
 
         st.metric(label="Total deaths",value=f"{df_deaths.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_deaths.total.diff().iloc[-1],df_deaths.total.diff().iloc[-2])} = {(df_deaths.total.diff()).iloc[-1]:,}",
                   delta_color="inverse")
 
-        st.metric(label="Total vaccinated",value=f"{df_vacc.total.iloc[-1]:,}",
-                  delta=f"{perc_change(df_vacc.total.diff().iloc[-1],df_vacc.total.diff().iloc[-2])} = {(df_vacc.total.diff()).iloc[-1]:,}")
+        st.metric(label="Total vaccinated",value=f"{df_vacc.total.iloc[-1]:,}")
 
-        # if 0.3*peaks.total.sum()<df_cases.total.iloc[-1]:
-        #     st.markdown("_SA is still in the third wave_")
-        # else:
-        #     st.markdown("_SA is no longer in the third wave_")
+
     else:
         st.metric(label="Total cases",value=f"{df_cases[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_cases[prov].diff().iloc[-1].sum(),df_cases[prov].diff().iloc[-2].sum())} = {(df_cases[prov].diff()).iloc[-1].sum():.0f}",
                   delta_color="inverse")
 
         st.metric(label="Total deaths", value=f"{df_deaths[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_deaths[prov].diff().iloc[-1].sum(), df_deaths[prov].diff().iloc[-2].sum())} = {(df_deaths[prov].diff()).iloc[-1].sum():.0f}",
                   delta_color="inverse")
 
-        st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}",
-                  delta=f"{perc_change(df_vacc[prov].diff().iloc[-1].sum(), df_vacc[prov].diff().iloc[-2].sum())} = {(df_vacc[prov].diff()).iloc[-1].sum():.0f}")
-        # if 0.3*(peaks[prov].sum())<df_cases[prov].iloc[-1].sum():
-        #     st.markdown("_These/this province(s) are still in the third wave_")
-        # else:
-        #     st.markdown("_These/this province(s) are no longer in the third wave_")
+        st.metric(label="Total vaccinated", value=f"{df_vacc[prov].iloc[-1].sum():,}")
+
 
     graphType = st.radio("Toggle graph", ["Daily Cases", "Daily Deaths", "Daily Vaccinated"])
 
@@ -117,7 +106,7 @@ elif graphType == "Daily Deaths":
     title = "Daily deaths (7 day moving-average)"
 
 elif graphType == "Daily Vaccinated":
-    df=df_vacc
+    df = df_vacc
     title = "Daily vaccinated (7 day moving-average)"
     df.date = pd.to_datetime(df.date, format="%Y-%m-%d")
 
@@ -126,7 +115,7 @@ if graphType != "Daily Vaccinated":
     df.date=pd.to_datetime(df.date,format="%d-%m-%Y")
 
 df.dropna(inplace=True)
-data=df[['date','EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
+data=df.loc[:,['date','EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']]
 data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
        'WC','total']]=MA(data[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW',
